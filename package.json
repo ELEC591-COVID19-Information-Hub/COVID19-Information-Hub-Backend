@@ -1,0 +1,25 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ELEC591-COVID19-Information-Hub/COVID-information-hub-backend.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ELEC591-COVID19-Information-Hub/COVID-information-hub-backend/issues"
+  },
+  "homepage": "https://github.com/ELEC591-COVID19-Information-Hub/COVID-information-hub-backend#readme",
+  "devDependencies": {
+    "eslint": "^8.11.0"
+  },
+  "dependencies": {
+    "express": "^4.17.3"
+  }
+}
