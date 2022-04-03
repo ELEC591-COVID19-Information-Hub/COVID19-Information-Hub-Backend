@@ -6,14 +6,17 @@ const app = express();
 const port = process.env.PORT || 3001;
 const url = "mongodb://localhost:27017/comp539"; 
 
+// The webpage to submit post info
 app.get('/post.html', function (req, res) {
     res.sendFile( __dirname + "/" + "post.html" );
 });
 
+// The webpage to submit comment info
 app.get('/comment.html', function (req, res) {
    res.sendFile( __dirname + "/" + "comment.html" );
 });
 
+// // Create the database and collections
 // MongoClient.connect(url, function (err, db) {
 //     if (err) throw err;
 //     console.log("Database created");
@@ -32,6 +35,7 @@ app.get('/comment.html', function (req, res) {
 // });
 
 
+// Get the posts data, classified by sateName and date
 app.get('/get_posts', function(req, res) {
     MongoClient.connect(url, function(err, db) { 
         if (err) throw err;
@@ -52,6 +56,7 @@ app.get('/get_posts', function(req, res) {
     });
 });
 
+// Submit new post
 app.get('/new_post', function(req, res) {
     MongoClient.connect(url, function(err, db) {
         if (err) throw err;
@@ -79,6 +84,7 @@ app.get('/new_post', function(req, res) {
     res.end("Success");
 });
 
+// Get the comments data, classified by newsID
 app.get('/get_comments', function(req, res) {
     MongoClient.connect(url, function(err, db) { 
         if (err) throw err;
@@ -97,6 +103,7 @@ app.get('/get_comments', function(req, res) {
     });
 });
 
+// Submit new comments
 app.get('/new_comment', function(req, res) {
     MongoClient.connect(url, function(err, db) {
         if (err) throw err;
@@ -120,6 +127,8 @@ app.get('/new_comment', function(req, res) {
     res.end("Success");
 });
 
+
+// Run the server
 var server = app.listen(port, function () {
  
     var host = server.address().address
