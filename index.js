@@ -1,20 +1,12 @@
 const express = require('express');
 const { stringify } = require('querystring');
 const MongoClient = require('mongodb').MongoClient; 
-// const fs = require('fs');
 const app = express();
 const port = process.env.PORT || 3001;
 const url = "mongodb://localhost:27017/comp539"; 
 
-// The webpage to submit post info
-app.get('/post.html', function (req, res) {
-    res.sendFile( __dirname + "/" + "post.html" );
-});
-
-// The webpage to submit comment info
-app.get('/comment.html', function (req, res) {
-   res.sendFile( __dirname + "/" + "comment.html" );
-});
+// Frontend send JSON data to backend
+app.use(express.json());
 
 // // Create the database and collections
 // MongoClient.connect(url, function (err, db) {
@@ -34,17 +26,48 @@ app.get('/comment.html', function (req, res) {
 //     });
 // });
 
+// Current states news topic list. need: [stateName, date]
+app.get('/get_news_topics', function(req, res) {
+    MongoClient.connect(url, function(err, db) {
+        if (err) throw err;
+        console.log("Connected to MongoDB");
 
-// Get the posts data, classified by sateName and date
-app.get('/get_posts', function(req, res) {
+        var comp590DB = db.db("Comp590");
+
+        // current state
+        var state = {
+            "stateName" : req.body.stateName
+        };
+
+        var options = {
+            // project only topic, ID, and date
+            projection : {
+                '_id': 1,
+                'topic' : 1,
+                'date' : 1
+            }
+        }
+
+        comp590DB.collection("newsPosts").find(state, options).toArray(function(err, result) {
+            if (err) throw err;
+            console.log(result);
+            res.json(result[0]);
+            db.close();
+        });
+    });
+});
+
+
+// Get the news data, classified by sateName and date, need: [stateName, date]
+app.get('/get_news_date', function(req, res) {
     MongoClient.connect(url, function(err, db) { 
         if (err) throw err;
         console.log("Connected to MongoDB"); 
 
         var comp590DB = db.db("Comp590");
         var whereStr = {
-            "sateName" : req.query.stateName,
-            "date" : req.query.date
+            "sateName" : req.body.stateName,
+            "date" : req.body.date
         };
 
         comp590DB.collection("newsPosts").find(whereStr).toArray(function(err, result) {
@@ -56,75 +79,114 @@ app.get('/get_posts', function(req, res) {
     });
 });
 
-// Submit new post
-app.get('/new_post', function(req, res) {
+
+// Submit new post, need: [stateName, topic, date, content, publisher]
+app.post('/new_news', function(req, res) {
     MongoClient.connect(url, function(err, db) {
         if (err) throw err;
 
-        console.log(req.query.stateName);
-
         var comp590DB = db.db("Comp590");
+
         var dataToAdd = {
-            "stateName" : req.query.stateName,
-            "date" : req.query.date,
-            "content" : req.query.content,
-            "publisher" : req.query.publisher,
-            "newsID" : req.query.newsID
+            "stateName" : req.body.stateName,
+            "topic" : req.body.topic,
+            "date" : req.body.date,
+            "content" : req.body.content,
+            "publisher" : req.body.publisher,
+            // "newsID" : req.body.newsID
         };
 
-        console.log(stringify(dataToAdd));
+        // console.log(stringify(dataToAdd));
 
-        comp590DB.collection("newsPosts").insertOne(dataToAdd, function(err, res) {
+        comp590DB.collection("newsPosts").insertOne(dataToAdd, function(err, result) {
             if (err) throw err;
             console.log("Inserted news/post successfully");
+            // return new news' _id
+            res.json(result["insertedId"]);
             db.close();
         });
     });
-
-    res.end("Success");
 });
 
-// Get the comments data, classified by newsID
+
+// Current news' comment list, need: [newsID]
 app.get('/get_comments', function(req, res) {
-    MongoClient.connect(url, function(err, db) { 
+    MongoClient.connect(url, function(err, db) {
         if (err) throw err;
         console.log("Connected to MongoDB"); 
 
         var comp590DB = db.db("Comp590");
-        var whereStr = {
-            "newsID" : req.query.newsID
+
+        // the current news' id
+        var newsIDToFind = {
+            // news' ID
+            "newsID" : req.body.newsID
         };
 
-        comp590DB.collection("comments").find(whereStr).toArray(function(err, result) {
+        comp590DB.collection("comments").find(newsIDToFind).toArray(function(err, result) {
             if (err) throw err;
             console.log(result);
+            res.json(result[0]);
             db.close();
         });
     });
 });
 
-// Submit new comments
-app.get('/new_comment', function(req, res) {
+
+// Submit a new comment, need: [newsID, commenterName, content, date, isResponse, replyTo]
+// if this is a comment replying to another comment, the <isResponse> should be true, the <replyTo> is 
+// the commentID of the comment that is replied.
+// Or the <isResponse> should be false and <replyTo> is ignored.
+app.put('/new_comment', function(req, res) {
     MongoClient.connect(url, function(err, db) {
         if (err) throw err;
+        console.log("Connected to MongoDB"); 
 
         var comp590DB = db.db("Comp590");
         var dataToAdd = {
-            "newsID" : req.query.newsID,
-            "commentID" : req.query.commentID,
-            "commenterName" : req.query.commenterName,
-            "content" : req.query.content,
-            "date" : req.query.date
+            "newsID" : req.body.newsID,
+            // "commentID" : req.body.commentID,
+            "commenterName" : req.body.commenterName,
+            "content" : req.body.content,
+            "date" : req.body.date,
+            "isResponse" : req.body.isResponse,
+            // Empty if isResponse is false
+            "replyTo" : req.body.replyTo
         };
 
-        comp590DB.collection("comments").insertOne(dataToAdd, function(err, res) {
+        // console.log(stringify(dataToAdd));
+
+        comp590DB.collection("comments").insertOne(dataToAdd, function(err, result) {
             if (err) throw err;
             console.log("Inserted comment successfully");
+            // return new comment's _id
+            res.json(result["insertedId"]);
             db.close();
         });
     });
+});
 
-    res.end("Success");
+// Current comment's response list.
+app.get('/get_responses', function(req, res) {
+    MongoClient.connect(url, function(err, db) {
+        if (err) throw err;
+        console.log("Connected to MongoDB"); 
+
+        var comp590DB = db.db("Comp590");
+        var responseToFind = {
+            "newsID" : req.body.newsID,
+            "isResponse" : req.body.replyTo,
+            // to which comment's id you reply
+            "replyTo" : req.body.replyTo
+        };
+
+        comp590DB.collection("comments").find(responseToFind).toArray(function(err, result) {
+            if (err) throw err;
+            console.log(result);
+            res.json(result[0]);
+            db.close();
+        });        
+    });
 });
 
 
