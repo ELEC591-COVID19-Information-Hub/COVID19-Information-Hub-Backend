@@ -111,11 +111,11 @@ async function password(req, res) {
 }
 
 module.exports = (app) => {
-    app.use(session({
-        secret: 'ilij2uyKEw(C]#X0Wb%Q/+hM^!g#O!vvq,tbdnI_Uj?hd-', // A strong secret
-        resave: true,
-        saveUninitialized: true
-    }));
+    // app.use(session({
+    //     secret: 'ilij2uyKEw(C]#X0Wb%Q/+hM^!g#O!vvq,tbdnI_Uj?hd-', // A strong secret
+    //     resave: true,
+    //     saveUninitialized: true
+    // }));
     app.post('/login', login);
     app.post('/register', register);
     app.use(isLoggedIn);
