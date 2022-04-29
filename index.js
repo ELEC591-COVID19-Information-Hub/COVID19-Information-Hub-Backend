@@ -9,7 +9,7 @@ const data = require("./src/data")
 const app = express()
 // TODO: determine front-end address
 app.use(cors({
-    origin: 'http://localhost:3001',
+    origin: 'https://covid-19-info-hub.surge.sh',
     credentials: true,
 }))
 app.use(bodyParser.json())
