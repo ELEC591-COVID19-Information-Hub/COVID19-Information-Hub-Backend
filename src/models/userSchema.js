@@ -12,9 +12,6 @@ const userSchema = new mongoose.Schema({
     hash: {
         type: String,
         required: [true, 'hash is required']
-    // },
-    // googleId: {
-    //     type: String
     }
 })
 

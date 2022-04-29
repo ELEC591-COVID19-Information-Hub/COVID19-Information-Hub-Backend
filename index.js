@@ -4,7 +4,8 @@ const auth = require('./src/auth');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const cors = require("cors");
-
+const article = require("./src/article");
+const data = require("./src/data")
 const app = express()
 // TODO: determine front-end address
 // app.use(cors({
@@ -13,9 +14,9 @@ const app = express()
 // }))
 app.use(bodyParser.json())
 app.use(cookieParser())
-
+data(app)
 auth(app);
-
+article(app)
 app.get('/', (req, resp) => {
     resp.send('test')
 })
@@ -30,3 +31,5 @@ const server = app.listen(port, () => {
         console.log(`Server listening at https://${address.address}:${address.port}`)
     }
 });
+
+
