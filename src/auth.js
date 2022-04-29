@@ -19,6 +19,7 @@ function isLoggedIn(req, res, next) {
 
     // no sid for cookie key
     if (!sid) {
+        console.log(req.cookies)
         console.log("no cookie sid")
         return res.sendStatus(401);
     }
