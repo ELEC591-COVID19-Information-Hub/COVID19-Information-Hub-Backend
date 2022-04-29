@@ -60,7 +60,7 @@ async function login(req, res) {
     }
     const sid = uuid()
     await redis.hmset(redis_session_key, sid, userObj.username);
-    res.cookie(cookieKey, sid, {maxAge: 3600 * 1000, httpOnly: true});
+    res.cookie(cookieKey, sid, {maxAge: 3600 * 1000, httpOnly: true, secure: true, sameSite: 'none'});
     return res.status(200).send({"username": username, "result": "success"});
 }
 
