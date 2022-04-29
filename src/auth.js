@@ -19,11 +19,14 @@ function isLoggedIn(req, res, next) {
 
     // no sid for cookie key
     if (!sid) {
+        console.log("no cookie sid")
         return res.sendStatus(401);
     }
     redis.hget(redis_session_key, sid, (err, username) => {
-        if (err)
+        if (err) {
+            console.log(err)
             return res.sendStatus(401);
+        }
 
         req.username = username;
         return next();
