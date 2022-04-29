@@ -1,1 +1,0 @@
-# COVID-information-hub-backend
