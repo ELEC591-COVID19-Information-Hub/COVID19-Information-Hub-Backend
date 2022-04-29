@@ -1,4 +1,4 @@
-const {GetAllArticles, GetArticleByState, GetArticlesById, UpdateArticleComments} = require("./database");
+const {GetAllArticles, GetArticleByState, GetArticlesById, UpdateArticleComments, UpdateArticleText} = require("./database");
 const articleSchema = require("./models/articleSchema");
 
 async function getArticles(req, response) {
@@ -32,6 +32,7 @@ async function addArticle(req, response) {
         author: req.username,
         comments: [],
         date: new Date(),
+        title: req.body.title,
         text: text,
         state: req.body.state
     })
@@ -55,6 +56,7 @@ function updateArticle(req, response) {
     }
     GetArticlesById(parseInt(req.params.id)).then(article => {
         if (article === null) {
+            console.log("not found")
             response.sendStatus(404)
             return
         }
@@ -122,8 +124,9 @@ function updateArticle(req, response) {
 
 }
 
-module.exports = (app) => {
-    app.get('/articles/:state?', getArticles)
-    app.put('/articles/:id', updateArticle)
-    app.post('/article', addArticle)
+module.exports = {
+
+    getArticles,
+    updateArticle,
+    addArticle
 }

@@ -8,15 +8,19 @@ const article = require("./src/article");
 const data = require("./src/data")
 const app = express()
 // TODO: determine front-end address
-// app.use(cors({
-//     origin: '',
-//     credentials: true,
-// }))
+app.use(cors({
+    origin: 'http://localhost:3001',
+    credentials: true,
+}))
 app.use(bodyParser.json())
 app.use(cookieParser())
 data(app)
+app.get('/articles/:state?', article.getArticles)
+
 auth(app);
-article(app)
+app.put('/articles/:id', article.updateArticle)
+app.post('/article', article.addArticle)
+
 app.get('/', (req, resp) => {
     resp.send('test')
 })

@@ -6,8 +6,8 @@ const articleSchema = require("../models/articleSchema");
 const dataSchema = require("../models/dataSchema")
 const session = require("express-session");
 const defaultHeadline = 'This is my headline'
-const uri = "mongodb+srv://root:thisiskey@jz-cluster.bcp4t.mongodb.net/dev-blog?retryWrites=true&w=majority";
-
+// const uri = "mongodb+srv://root:thisiskey@jz-cluster.bcp4t.mongodb.net/dev-blog?retryWrites=true&w=majority";
+const uri = process.env.MONGODB_URI ? process.env.MONGODB_URI : ""
 
 connect(uri, (err) => {
     if (err) {
@@ -87,5 +87,5 @@ module.exports = {
     GetAllArticlesByUser,
     GetAllArticlesMatchingUsername,
     GetArticlesById, GetCovidDataByDate,
-    GetArticleByState, GetAllArticles, UpdateUserPassword, UpdateArticleComments
+    GetArticleByState, GetAllArticles, UpdateUserPassword, UpdateArticleComments, UpdateArticleText
 }
